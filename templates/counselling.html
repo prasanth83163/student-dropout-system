@@ -1,0 +1,40 @@
+{% extends "base-student.html" %}
+
+{% block title %}My Counselling{% endblock %}
+{% block page_title %}My Counselling{% endblock %}
+
+{% block content %}
+<div class="section">
+    <h3>My Counselling Sessions</h3>
+    <div style="overflow-x:auto;">
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Counsellor</th>
+                    <th>Status</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if sessions %}
+                    {% for item in sessions %}
+                    <tr>
+                        <td>{{ item['session_date'] }}</td>
+                        <td><span class="badge session">{{ item['session_type'] }}</span></td>
+                        <td>{{ item['counsellor_name'] or 'Not Assigned' }}</td>
+                        <td>{{ item['status'] }}</td>
+                        <td>{{ item['notes'] or 'No notes' }}</td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="5">No counselling sessions found</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
