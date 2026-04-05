@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Counselling Assistant - Student Dropout Prediction & Counselling System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-blue: #2563eb;
+            --primary-blue-dark: #1d4ed8;
+            --primary-blue-light: #3b82f6;
+            --primary-blue-soft: #dbeafe;
+            --white: #ffffff;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --bot-bubble: #f1f5f9;
+            --user-bubble: #2563eb;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 1.5rem;
+            left: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .back-button:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateX(-3px);
+        }
+
+        .back-button svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .chat-container {
+            width: 100%;
+            max-width: 700px;
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            max-height: 90vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-dark) 100%);
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .chat-header-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .chat-header-icon svg {
+            width: 32px;
+            height: 32px;
+        }
+
+        .chat-header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .chat-header p {
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+
+        .online-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+            font-size: 0.75rem;
+        }
+
+        .online-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .clear-chat-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .clear-chat-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .clear-chat-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            background: var(--gray-50);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            scroll-behavior: smooth;
+        }
+
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: var(--gray-300);
+            border-radius: 3px;
+        }
+
+        .message {
+            display: flex;
+            flex-direction: column;
+            max-width: 80%;
+            animation: fadeInUp 0.3s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            align-self: flex-end;
+            align-items: flex-end;
+        }
+
+        .message.bot {
+            align-self: flex-start;
+            align-items: flex-start;
+        }
+
+        .message-bubble {
+            padding: 0.875rem 1.125rem;
+            border-radius: 18px;
+            font-size: 0.9375rem;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+
+        .message.user .message-bubble {
+            background: var(--user-bubble);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .message.bot .message-bubble {
+            background: var(--bot-bubble);
+            color: var(--gray-800);
+            border-bottom-left-radius: 4px;
+            border: 1px solid var(--gray-200);
+        }
+
+        .message-time {
+            font-size: 0.6875rem;
+            color: var(--gray-400);
+            margin-top: 0.25rem;
+        }
+
+        .bot-avatar {
+            width: 28px;
+            height: 28px;
+            background: var(--primary-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 0.25rem;
+        }
+
+        .bot-avatar svg {
+            width: 16px;
+            height: 16px;
+            color: white;
+        }
+
+        .typing-indicator {
+            display: none;
+            align-self: flex-start;
+            background: var(--bot-bubble);
+            padding: 1rem 1.25rem;
+            border-radius: 18px;
+            border-bottom-left-radius: 4px;
+            margin-bottom: 0.5rem;
+        }
+
+        .typing-indicator.show {
+            display: flex;
+            gap: 4px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--gray-400);
+            border-radius: 50%;
+            animation: typingBounce 1.4s infinite ease-in-out both;
+        }
+
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes typingBounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        .chat-input-container {
+            padding: 1rem 1.5rem 1.5rem;
+            background: white;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .chat-input-wrapper {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 0.875rem 1.25rem;
+            border: 2px solid var(--gray-200);
+            border-radius: 25px;
+            font-size: 0.9375rem;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .chat-input:focus {
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px var(--primary-blue-soft);
+        }
+
+        .chat-input::placeholder {
+            color: var(--gray-400);
+        }
+
+        .send-button {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: none;
+            background: var(--primary-blue);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .send-button:hover:not(:disabled) {
+            background: var(--primary-blue-dark);
+            transform: scale(1.05);
+        }
+
+        .send-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .send-button svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .footer-note {
+            text-align: center;
+            padding: 0.75rem 1rem;
+            background: var(--gray-50);
+            border-top: 1px solid var(--gray-200);
+            font-size: 0.75rem;
+            color: var(--gray-500);
+        }
+
+        .welcome-message {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: var(--gray-500);
+        }
+
+        .welcome-message-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--primary-blue-soft);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+        }
+
+        .welcome-message-icon svg {
+            width: 40px;
+            height: 40px;
+            color: var(--primary-blue);
+        }
+
+        .welcome-message h3 {
+            font-size: 1.125rem;
+            color: var(--gray-700);
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-message p {
+            font-size: 0.875rem;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 640px) {
+            .chat-container {
+                max-height: 100vh;
+                border-radius: 0;
+            }
+
+            body {
+                padding: 0;
+            }
+
+            .back-button {
+                top: 0.75rem;
+                left: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="counselling.html" class="back-button">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        Back to Counselling
+    </a>
+
+    <div class="chat-container">
+        <div class="chat-header">
+            <button class="clear-chat-btn" onclick="clearChat()">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                Clear
+            </button>
+            <div class="chat-header-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                </svg>
+            </div>
+            <h1>AI Counselling Assistant</h1>
+            <p>Type in any language - I'll reply the same way</p>
+            <div class="online-status">
+                <div class="online-dot"></div>
+                <span>Online</span>
+            </div>
+        </div>
+
+        <div class="chat-messages" id="chatMessages">
+            <div class="welcome-message" id="welcomeMessage">
+                <div class="welcome-message-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <h3>Welcome! I'm here to help</h3>
+                <p>Chat with me in English, Tamil, or Thanglish. I'll understand and respond in the same language you use.</p>
+            </div>
+
+            <div class="typing-indicator" id="typingIndicator">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            </div>
+        </div>
+
+        <div class="chat-input-container">
+            <div class="chat-input-wrapper">
+                <input type="text" class="chat-input" id="chatInput" placeholder="Type your message..." onkeypress="handleKeyPress(event)">
+                <button class="send-button" id="sendButton" onclick="sendMessage()">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="footer-note">
+            This AI assistant provides guidance support and does not replace professional counselling.
+        </div>
+    </div>
+
+    <script>
+        // Simple language detection
+        function detectLanguage(text) {
+            // Check for Tamil script
+            if (/[\u0B80-\u0BFF]/.test(text)) return 'tamil';
+            
+            // Check for Thanglish (Tamil words in English letters)
+            const thanglishPattern = /\b(eppadi|irukinga|enaku|ungaluku|neenga|naan|enna|epdi|seri|sari|illa|romba|mukkiyam|padathinga|eduthukathinga|kammi|dhan|solunga|pesunga|kelunga|kocham|kashtam|bayam|sandosham|kavalai|padikira|veedu|amma|appa|anna|akka|thambi|thangai|nanban|nanbi|puriyudhu|konjam|adhu|inga|kekur|nandri|vanakkam|nandri|sari|theriyum|therla|yen|yean|enna|eppadi|iruku|irukku|pannu|pannunga|varen|varan|poren|poran|konjam|romba|jasti|kashtam|kastam|bayam|bhayam|sandosham|sandhosam)\b/i;
+            if (thanglishPattern.test(text)) return 'thanglish';
+            
+            return 'english';
+        }
+
+        // Responses in different languages
+        const responses = {
+            english: [
+                "I understand how you feel. Can you tell me more about what's bothering you?",
+                "I'm here to listen. Please share more about your situation.",
+                "That sounds challenging. Let's work together to find a solution.",
+                "I hear you. It's important to talk about these things.",
+                "Thank you for sharing. I'm here to support you through this.",
+                "I understand your concern. Let's explore some options together.",
+                "It's okay to feel this way. Many students go through similar experiences.",
+                "I'm listening. Please continue and tell me more.",
+                "Your feelings are valid. Let's see how we can make things better.",
+                "I appreciate you opening up. Together we can work on this."
+            ],
+            thanglish: [
+                "Puriyudhu. Enna nadakuthu konjam detail-a solunga. Naan help pannuren.",
+                "Naan inga kekuren. Enna problem complete-a explain pannunga.",
+                "Adhu kashtam dhan. Kooda discuss panni solution find pannalam.",
+                "Neenga solradhu puriyudhu. Ithu pathi pesuradhu romba mukkiyam.",
+                "Share pannaduku nandri. Naan ungaluku support-a iruken.",
+                "Puriyudhu. Kooda options explore panni paakalam.",
+                "Ithu normal dhan. Neraya students ipdi feel panranga.",
+                "Naan kekuren. Konjam detail-a solunga.",
+                "Ungaloda feelings correct dhan. Epdi better pannalam-nu paakalam.",
+                "Open-a share pannaduku nandri. Kooda work pannalam.",
+                "Sari. Enna help venum solunga. Naan inga iruken.",
+                "Theriyum. Kooda plan panni handle pannalam. Worry pannathinga."
+            ],
+            tamil: [
+                "புரிகிறது. என்ன பிரச்சனை என்று விரிவாக சொல்லுங்கள். நான் உதவுகிறேன்.",
+                "நான் இங்கே கேட்கிறேன். என்ன நடக்கிறது முழுவதுமாக விளக்குங்கள்.",
+                "அது கடினம். சேர்ந்து விவாதித்து தீர்வு காணலாம்.",
+                "நீங்கள் சொல்வது புரிகிறது. இது பற்றி பேசுவது முக்கியம்.",
+                "பகிர்ந்ததற்கு நன்றி. நான் உங்களுக்கு ஆதரவாக இருக்கிறேன்.",
+                "புரிகிறது. சேர்ந்து வழிகளை ஆராயலாம்.",
+                "இது இயல்பானது. பல மாணவர்கள் இப்படி உணர்கிறார்கள்.",
+                "நான் கேட்கிறேன். சிறிது விரிவாக சொல்லுங்கள்.",
+                "உங்களது உணர்வுகள் சரியானவை. எப்படி சிறப்பாக்கலாம் என்று பார்க்கலாம்.",
+                "திறந்து பகிர்ந்ததற்கு நன்றி. சேர்ந்து உழைக்கலாம்."
+            ]
+        };
+
+        let messageCount = 0;
+
+        function getCurrentTime() {
+            const now = new Date();
+            return now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+        }
+
+        function getBotResponse(userMessage) {
+            const lang = detectLanguage(userMessage);
+            const langResponses = responses[lang];
+            
+            // Cycle through responses
+            const responseIndex = messageCount % langResponses.length;
+            messageCount++;
+            
+            return langResponses[responseIndex];
+        }
+
+        function showTypingIndicator() {
+            document.getElementById('typingIndicator').classList.add('show');
+            scrollToBottom();
+        }
+
+        function hideTypingIndicator() {
+            document.getElementById('typingIndicator').classList.remove('show');
+        }
+
+        function scrollToBottom() {
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function addMessage(text, isUser) {
+            const chatMessages = document.getElementById('chatMessages');
+            
+            const welcomeMessage = document.getElementById('welcomeMessage');
+            if (welcomeMessage) welcomeMessage.style.display = 'none';
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : 'bot'}`;
+            
+            let messageHTML = '';
+            
+            if (!isUser) {
+                messageHTML += `
+                    <div class="bot-avatar">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                `;
+            }
+            
+            messageHTML += `
+                <div class="message-bubble">${escapeHtml(text)}</div>
+                <div class="message-time">${getCurrentTime()}</div>
+            `;
+            
+            messageDiv.innerHTML = messageHTML;
+            chatMessages.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            addMessage(message, true);
+            input.value = '';
+            
+            showTypingIndicator();
+            
+            setTimeout(() => {
+                hideTypingIndicator();
+                const response = getBotResponse(message);
+                addMessage(response, false);
+            }, 1500);
+        }
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function clearChat() {
+            const chatMessages = document.getElementById('chatMessages');
+            const messages = chatMessages.querySelectorAll('.message');
+            messages.forEach(msg => msg.remove());
+            
+            const welcomeMessage = document.getElementById('welcomeMessage');
+            if (welcomeMessage) welcomeMessage.style.display = 'block';
+            
+            hideTypingIndicator();
+            messageCount = 0;
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('chatInput').focus();
+        });
+    </script>
+</body>
+</html>
