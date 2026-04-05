@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Dashboard - Student Dropout Prediction & Counselling System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-blue: #2563eb;
+            --primary-blue-dark: #1d4ed8;
+            --primary-blue-light: #3b82f6;
+            --sidebar-bg: #1e3a5f;
+            --sidebar-hover: #254670;
+            --sidebar-active: #3b82f6;
+            --white: #ffffff;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --red-500: #ef4444;
+            --red-100: #fef2f2;
+            --orange-500: #f97316;
+            --orange-100: #fff7ed;
+            --green-500: #10b981;
+            --green-100: #ecfdf5;
+            --blue-100: #dbeafe;
+            --purple-100: #f3e8ff;
+            --purple-600: #9333ea;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--gray-50);
+            color: var(--gray-800);
+            line-height: 1.6;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.5s ease-out forwards;
+            opacity: 0;
+        }
+
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.15s; }
+        .delay-300 { animation-delay: 0.2s; }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: var(--sidebar-bg);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            left: 0;
+            top: 0;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--sidebar-active);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+        }
+        .logo-text {
+            color: white;
+            font-weight: 600;
+            font-size: 0.95rem;
+            line-height: 1.3;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 1rem 0;
+            overflow-y: auto;
+        }
+
+        .nav-section {
+            padding: 0 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-section-title {
+            color: var(--gray-400);
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.5rem 1rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            padding: 0.75rem 1rem;
+            margin: 0.25rem 0;
+            border-radius: 8px;
+            color: var(--gray-300);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .nav-item span,
+        .logout-btn span {
+            width: 20px;
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .nav-item:hover {
+            background: var(--sidebar-hover);
+            color: white;
+        }
+
+        .nav-item.active {
+            background: var(--sidebar-active);
+            color: white;
+        }
+
+        .sidebar-footer {
+            padding: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.875rem;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            color: var(--gray-400);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            width: 100%;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: white;
+            border-bottom: 1px solid var(--gray-200);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .mobile-menu-toggle {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: 1px solid var(--gray-200);
+            background: white;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .mobile-menu-toggle svg {
+            width: 20px;
+            height: 20px;
+            color: var(--gray-600);
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gray-800);
+        }
+
+        .search-bar {
+            position: relative;
+            width: 320px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.625rem 1rem 0.625rem 2.5rem;
+            border: 1px solid var(--gray-200);
+            border-radius: 10px;
+            font-size: 0.875rem;
+            font-family: inherit;
+            color: var(--gray-700);
+            background: var(--gray-50);
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary-blue-light);
+            background: white;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+            color: var(--gray-400);
+        }
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .notification-btn {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            border: 1px solid var(--gray-200);
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .notification-btn:hover {
+            background: var(--gray-50);
+        }
+
+        .notification-btn svg {
+            width: 20px;
+            height: 20px;
+            color: var(--gray-600);
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 18px;
+            height: 18px;
+            background: var(--red-500);
+            color: white;
+            font-size: 0.65rem;
+            font-weight: 600;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+        }
+
+        .profile-section {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .profile-section:hover {
+            background: var(--gray-50);
+        }
+
+        .profile-avatar {
+            width: 36px;
+            height: 36px;
+            background: var(--sidebar-bg);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+
+        .profile-info {
+            display: none;
+        }
+
+        @media (min-width: 768px) {
+            .profile-info {
+                display: block;
+            }
+        }
+
+        .profile-name {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+
+        .profile-role {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+        }
+
+        .dashboard-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+
+        .stat-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon.blue {
+            background: var(--blue-100);
+            color: var(--primary-blue);
+        }
+
+        .stat-icon.red {
+            background: var(--red-100);
+            color: var(--red-500);
+        }
+
+        .stat-icon.orange {
+            background: var(--orange-100);
+            color: var(--orange-500);
+        }
+
+        .stat-icon.green {
+            background: var(--green-100);
+            color: var(--green-500);
+        }
+
+        .stat-icon svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--gray-800);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+            font-weight: 500;
+        }
+
+        .table-card,
+        .content-card {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            margin-bottom: 2rem;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .table-title,
+        .section-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+
+        .view-all-btn {
+            font-size: 0.875rem;
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .view-all-btn:hover {
+            text-decoration: underline;
+        }
+
+        .empty-box {
+            text-align: center;
+            padding: 2rem;
+            border: 1px dashed var(--gray-300);
+            border-radius: 12px;
+            background: var(--gray-50);
+            color: var(--gray-500);
+            font-size: 0.95rem;
+        }
+
+        .student-table-wrap {
+            overflow-x: auto;
+        }
+
+        .student-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .student-table thead tr {
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .student-table th {
+            text-align: left;
+            padding: 0.85rem 0.75rem;
+            font-size: 0.85rem;
+            color: var(--gray-600);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .student-table td {
+            padding: 0.9rem 0.75rem;
+            font-size: 0.9rem;
+            color: var(--gray-700);
+            border-bottom: 1px solid var(--gray-100);
+            white-space: nowrap;
+        }
+
+        .risk-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.3rem 0.65rem;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 600;
+        }
+
+        .risk-badge.high {
+            background: var(--red-100);
+            color: var(--red-500);
+        }
+
+        .risk-badge.medium {
+            background: var(--orange-100);
+            color: var(--orange-500);
+        }
+
+        .risk-badge.low {
+            background: var(--green-100);
+            color: var(--green-500);
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+        }
+
+        .action-card {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            text-decoration: none;
+        }
+
+        .action-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px -4px rgba(0, 0, 0, 0.08);
+            border-color: var(--primary-blue-light);
+        }
+
+        .action-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.15rem;
+        }
+        .action-icon.blue {
+            background: var(--blue-100);
+            color: var(--primary-blue);
+        }
+
+        .action-icon.green {
+            background: var(--green-100);
+            color: var(--green-500);
+        }
+
+        .action-icon.purple {
+            background: var(--purple-100);
+            color: var(--purple-600);
+        }
+
+        .action-text {
+            font-weight: 600;
+            color: var(--gray-800);
+            font-size: 0.9375rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+        }
+
+        .form-group label {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem 0.9rem;
+            border: 1px solid var(--gray-200);
+            border-radius: 10px;
+            font-size: 0.9rem;
+            background: white;
+            color: var(--gray-700);
+            outline: none;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary-blue-light);
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .primary-btn {
+            border: none;
+            background: var(--primary-blue);
+            color: white;
+            padding: 0.9rem 1.2rem;
+            border-radius: 10px;
+            font-size: 0.92rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .primary-btn:hover {
+            background: var(--primary-blue-dark);
+        }
+
+        .section-subtext {
+            color: var(--gray-500);
+            font-size: 0.92rem;
+            margin-top: 0.3rem;
+            margin-bottom: 1.25rem;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .mobile-menu-toggle {
+                display: flex;
+            }
+
+            .search-bar {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+            }
+
+            .dashboard-content {
+                padding: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .table-header {
+                gap: 0.75rem;
+                align-items: flex-start;
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-section">
+                    <div class="logo-icon">🎓</div>
+                    <span class="logo-text">Student Dropout<br>System</span>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Main Menu</div>
+
+                    <a href="#" class="nav-item active" onclick="showSection(event, 'dashboard-section', this)">
+                        <span>📊</span>
+                        Dashboard
+                    </a>
+
+                    <a href="#" class="nav-item" onclick="showSection(event, 'add-student-section', this)">
+                        <span>➕</span>
+                        Add Student
+                    </a>
+
+                    <a href="#" class="nav-item" onclick="showSection(event, 'view-students-section', this)">
+                        <span>👥</span>
+                        View Students
+                    </a>
+
+                    <a href="#" class="nav-item" onclick="showSection(event, 'high-risk-section', this)">
+                        <span>⚠️</span>
+                        High Risk Students
+                    </a>
+
+                    <a href="#" class="nav-item" onclick="showSection(event, 'counselling-section', this)">
+                        <span>💬</span>
+                        Counselling
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Analytics</div>
+
+                    <a href="#" class="nav-item" onclick="showSection(event, 'reports-section', this)">
+                        <span>📈</span>
+                        Reports
+                    </a>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button class="logout-btn" onclick="window.location.href='/logout'">
+                    <span>🚪</span>
+                    Logout
+                </button>
+            </div>
+        </aside>
+
+        <div class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <button class="mobile-menu-toggle" id="mobileMenuToggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+
+                    <h1 class="page-title">Staff Dashboard</h1>
+
+                    <div class="search-bar">
+                        <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                        <input type="text" class="search-input" placeholder="Search student by name or register number...">
+                    </div>
+                </div>
+
+                <div class="header-actions">
+                    <button class="notification-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                        <span class="notification-badge">5</span>
+                    </button>
+
+                    <div class="profile-section">
+                        <div class="profile-avatar">ST</div>
+                        <div class="profile-info">
+                            <div class="profile-name">Staff Member</div>
+                            <div class="profile-role">Counsellor</div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <main class="dashboard-content">
+
+                <section id="dashboard-section" class="section active">
+                    <div class="stats-grid">
+                        <div class="stat-card animate-fade-in-up">
+                            <div class="stat-icon blue">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                            </div>
+                            <div class="stat-value">{{ assigned_students }}</div>
+                            <div class="stat-label">Total Students Assigned</div>
+                        </div>
+
+                        <div class="stat-card animate-fade-in-up delay-100">
+                            <div class="stat-icon red">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                </svg>
+                            </div>
+                            <div class="stat-value">{{ high_risk }}</div>
+                            <div class="stat-label">High Risk Students</div>
+                        </div>
+
+                        <div class="stat-card animate-fade-in-up delay-200">
+                            <div class="stat-icon orange">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <div class="stat-value">{{ medium_risk }}</div>
+                            <div class="stat-label">Medium Risk Students</div>
+                        </div>
+
+                        <div class="stat-card animate-fade-in-up delay-300">
+                            <div class="stat-icon green">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <div class="stat-value">{{ low_risk }}</div>
+                            <div class="stat-label">Low Risk Students</div>
+                        </div>
+                    </div>
+
+                    <div class="table-card">
+                        <div class="table-header">
+                            <h2 class="table-title">High Risk Students</h2>
+                            <a href="#" class="view-all-btn" onclick="showSection(event, 'high-risk-section', document.querySelector('.nav-item[onclick*=&quot;high-risk-section&quot;]'))">View All</a>
+                        </div>
+
+                        {% if high_risk_students %}
+                        <div class="student-table-wrap">
+                            <table class="student-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Register No</th>
+                                        <th>Department</th>
+                                        <th>Year</th>
+                                        <th>Attendance</th>
+                                        <th>Marks</th>
+                                        <th>Risk</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for student in high_risk_students %}
+                                    <tr>
+                                        <td>{{ student.name }}</td>
+                                        <td>{{ student.register_number }}</td>
+                                        <td>{{ student.department }}</td>
+                                        <td>{{ student.year }}</td>
+                                        <td>{{ student.attendance }}</td>
+                                        <td>{{ student.average_marks }}</td>
+                                        <td><span class="risk-badge high">{{ student.risk_level }}</span></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="empty-box">No live high risk student data connected yet</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="quick-actions">
+                        <a href="#" class="action-card" onclick="showSection(event, 'add-student-section', document.querySelector('.nav-item[onclick*=&quot;add-student-section&quot;]'))">
+                            <div class="action-icon blue">➕</div>
+                            <div class="action-text">Add New Student</div>
+                        </a>
+
+                        <a href="#" class="action-card" onclick="showSection(event, 'reports-section', document.querySelector('.nav-item[onclick*=&quot;reports-section&quot;]'))">
+                            <div class="action-icon green">📄</div>
+                            <div class="action-text">Generate Report</div>
+                        </a>
+
+                        <a href="#" class="action-card" onclick="showSection(event, 'counselling-section', document.querySelector('.nav-item[onclick*=&quot;counselling-section&quot;]'))">
+                            <div class="action-icon purple">💬</div>
+                            <div class="action-text">Start Counselling</div>
+                        </a>
+                    </div>
+                </section>
+
+                <section id="add-student-section" class="section">
+                    <div class="content-card">
+                        <h2 class="section-title">Add Student</h2>
+                        <p class="section-subtext">Student details enter panni system la save pannunga.</p>
+
+                        <form action="/students/add" method="POST">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label>Register Number</label>
+                                    <input type="text" name="register_number" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Password</label>
+                                    <input type="text" name="password" value="student123" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Student Name</label>
+                                    <input type="text" name="name" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Email</label>
+                                    <input type="email" name="email" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Phone</label>
+                                    <input type="text" name="phone" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Department</label>
+                                    <input type="text" name="department" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Year</label>
+                                    <select name="year" required>
+                                        <option value="">Select Year</option>
+                                        <option value="1">1st Year</option>
+                                        <option value="2">2nd Year</option>
+                                        <option value="3">3rd Year</option>
+                                        <option value="4">4th Year</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Attendance (%)</label>
+                                    <input type="number" name="attendance" min="0" max="100" step="0.1" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Average Marks</label>
+                                    <input type="number" name="average_marks" min="0" max="100" step="0.1" required>
+                                </div>
+
+                                <div class="form-group full-width">
+                                    <button type="submit" class="primary-btn">Save Student</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+
+                <section id="view-students-section" class="section">
+                    <div class="content-card">
+                        <div class="table-header">
+                            <h2 class="section-title">All Students</h2>
+                        </div>
+
+                        {% if all_students %}
+                        <div class="student-table-wrap">
+                            <table class="student-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Register No</th>
+                                        <th>Department</th>
+                                        <th>Year</th>
+                                        <th>Attendance</th>
+                                        <th>Marks</th>
+                                        <th>Risk</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for student in all_students %}
+                                    <tr>
+                                        <td>{{ student.name }}</td>
+                                        <td>{{ student.register_number }}</td>
+                                        <td>{{ student.department }}</td>
+                                        <td>{{ student.year }}</td>
+                                        <td>{{ student.attendance }}</td>
+                                        <td>{{ student.average_marks }}</td>
+                                        <td>
+                                            {% if student.risk_level == 'High' %}
+                                            <span class="risk-badge high">{{ student.risk_level }}</span>
+                                            {% elif student.risk_level == 'Medium' %}
+                                                <span class="risk-badge medium">{{ student.risk_level }}</span>
+                                            {% else %}
+                                                <span class="risk-badge low">{{ student.risk_level }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ student.status }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="empty-box">No students found.</div>
+                        {% endif %}
+                    </div>
+                </section>
+
+                <section id="high-risk-section" class="section">
+                    <div class="content-card">
+                        <div class="table-header">
+                            <h2 class="section-title">High Risk Students</h2>
+                        </div>
+
+                        {% if high_risk_students %}
+                        <div class="student-table-wrap">
+                            <table class="student-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Register No</th>
+                                        <th>Department</th>
+                                        <th>Year</th>
+                                        <th>Attendance</th>
+                                        <th>Marks</th>
+                                        <th>Risk</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for student in high_risk_students %}
+                                    <tr>
+                                        <td>{{ student.name }}</td>
+                                        <td>{{ student.register_number }}</td>
+                                        <td>{{ student.department }}</td>
+                                        <td>{{ student.year }}</td>
+                                        <td>{{ student.attendance }}</td>
+                                        <td>{{ student.average_marks }}</td>
+                                        <td><span class="risk-badge high">{{ student.risk_level }}</span></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="empty-box">No high risk students found.</div>
+                        {% endif %}
+                    </div>
+                </section>
+
+                <section id="counselling-section" class="section">
+                    <div class="content-card">
+                        <h2 class="section-title">Counselling</h2>
+                        <p class="section-subtext">Counselling related content inga same page la show aagum.</p>
+
+                        <div class="empty-box">
+                            Ippo inga counselling section ready. Next step la counselling form and session history add pannalaam.
+                        </div>
+                    </div>
+                </section>
+
+                <section id="reports-section" class="section">
+                    <div class="content-card">
+                        <h2 class="section-title">Reports & Analytics</h2>
+                        <p class="section-subtext">Reports and analytics content inga display aagum.</p>
+
+                        <div class="stats-grid" style="margin-bottom:0;">
+                            <div class="stat-card">
+                                <div class="stat-icon blue">📊</div>
+                                <div class="stat-value">{{ assigned_students }}</div>
+                                <div class="stat-label">Total Students</div>
+                            </div>
+
+                            <div class="stat-card">
+                                <div class="stat-icon red">⚠️</div>
+                                <div class="stat-value">{{ high_risk }}</div>
+                                <div class="stat-label">High Risk</div>
+                            </div>
+
+                            <div class="stat-card">
+                                <div class="stat-icon orange">⏱️</div>
+                                <div class="stat-value">{{ medium_risk }}</div>
+                                <div class="stat-label">Medium Risk</div>
+                            </div>
+
+                            <div class="stat-card">
+                                <div class="stat-icon green">✅</div>
+                                <div class="stat-value">{{ low_risk }}</div>
+                                <div class="stat-label">Low Risk</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <script>
+        const mobileMenuToggle = document.getElementById('mobileMenuToggle');
+        const sidebar = document.getElementById('sidebar');
+
+        if (mobileMenuToggle && sidebar) {
+            mobileMenuToggle.addEventListener('click', function () {
+                sidebar.classList.toggle('open');
+            });
+
+            document.addEventListener('click', function (e) {
+                if (window.innerWidth <= 1024) {
+                    if (!sidebar.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
+                        sidebar.classList.remove('open');
+                    }
+                }
+            });
+        }
+
+        function showSection(event, sectionId, clickedElement) {
+            event.preventDefault();
+
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.classList.add('active');
+            }
+
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
+
+            if (clickedElement) {
+                clickedElement.classList.add('active');
+            }
+        }
+    </script>
+</body>
+</html>
