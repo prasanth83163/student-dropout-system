@@ -1,0 +1,96 @@
+{% extends "base-student.html" %}
+
+{% block title %}Student Dashboard{% endblock %}
+{% block page_title %}Student Dashboard{% endblock %}
+
+{% block content %}
+<div class="cards">
+    <div class="card">
+        <div class="card-title">Attendance</div>
+        <div class="card-value">{{ student['attendance'] }}%</div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Average Marks</div>
+        <div class="card-value">{{ student['average_marks'] }}%</div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Support Status</div>
+        <div class="card-value support">Available</div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Status</div>
+        <div class="card-value status-active">{{ student['status'] }}</div>
+    </div>
+</div>
+
+<div class="section">
+    <h3>My Information</h3>
+    <div class="info-grid">
+        <div class="info-box">
+            <div class="info-label">Name</div>
+            <div class="info-value">{{ student['name'] }}</div>
+        </div>
+        <div class="info-box">
+            <div class="info-label">Register Number</div>
+            <div class="info-value">{{ student['register_number'] }}</div>
+        </div>
+        <div class="info-box">
+            <div class="info-label">Department</div>
+            <div class="info-value">{{ student['department'] }}</div>
+        </div>
+        <div class="info-box">
+            <div class="info-label">Year</div>
+            <div class="info-value">{{ student['year'] }}</div>
+        </div>
+        <div class="info-box">
+            <div class="info-label">Email</div>
+            <div class="info-value">{{ student['email'] }}</div>
+        </div>
+        <div class="info-box">
+            <div class="info-label">Phone</div>
+            <div class="info-value">{{ student['phone'] }}</div>
+        </div>
+    </div>
+
+    <div class="support-note">
+        Student support services are available for academic and counselling assistance.
+    </div>
+</div>
+
+<div class="section">
+    <h3>My Counselling History</h3>
+    <div style="overflow-x:auto;">
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Counsellor</th>
+                    <th>Status</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if counselling_history %}
+                    {% for item in counselling_history %}
+                    <tr>
+                        <td>{{ item['session_date'] }}</td>
+                        <td><span class="badge session">{{ item['session_type'] }}</span></td>
+                        <td>{{ item['counsellor_name'] or 'Not Assigned' }}</td>
+                        <td>{{ item['status'] }}</td>
+                        <td>{{ item['notes'] or 'No notes' }}</td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="5">No counselling sessions found</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
