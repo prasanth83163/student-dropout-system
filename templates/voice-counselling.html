@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Counselling - Student Dropout Prediction & Counselling System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-blue: #2563eb;
+            --primary-blue-dark: #1d4ed8;
+            --primary-blue-light: #3b82f6;
+            --primary-blue-soft: #dbeafe;
+            --white: #ffffff;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --red-500: #ef4444;
+            --red-100: #fef2f2;
+            --orange-500: #f97316;
+            --orange-100: #fff7ed;
+            --green-500: #10b981;
+            --green-100: #ecfdf5;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 1.5rem;
+            left: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .back-button:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateX(-3px);
+        }
+
+        .back-button svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .voice-container {
+            width: 100%;
+            max-width: 600px;
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+        }
+
+        .voice-header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-dark) 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .voice-header-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .voice-header-icon svg {
+            width: 40px;
+            height: 40px;
+        }
+
+        .voice-header h1 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .voice-header p {
+            font-size: 0.9375rem;
+            opacity: 0.9;
+        }
+
+        .voice-content {
+            padding: 2rem;
+        }
+
+        .language-selector {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .language-selector label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--gray-600);
+            margin-right: 0.75rem;
+        }
+
+        .language-selector select {
+            padding: 0.625rem 1rem;
+            border: 2px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-family: inherit;
+            color: var(--gray-800);
+            background: white;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .language-selector select:focus {
+            border-color: var(--primary-blue);
+        }
+
+        .error-message {
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            background: var(--red-100);
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+            color: var(--red-500);
+        }
+
+        .error-message.show {
+            display: flex;
+        }
+
+        .mic-section {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .mic-button {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--primary-blue-dark) 100%);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.3);
+        }
+
+        .mic-button:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(37, 99, 235, 0.4);
+        }
+
+        .mic-button.recording {
+            background: linear-gradient(135deg, var(--red-500) 0%, #dc2626 100%);
+            animation: pulse 1.5s infinite;
+        }
+
+        .mic-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .mic-button svg {
+            width: 48px;
+            height: 48px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .status-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--gray-300);
+            transition: all 0.3s ease;
+        }
+
+        .status-indicator.active {
+            background: var(--red-500);
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .status-text {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--gray-600);
+        }
+
+        .status-text.listening {
+            color: var(--red-500);
+        }
+
+        .sound-waves {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            height: 40px;
+            margin-bottom: 1.5rem;
+        }
+
+        .sound-waves.show {
+            display: flex;
+        }
+
+        .wave-bar {
+            width: 4px;
+            background: var(--red-500);
+            border-radius: 2px;
+            animation: soundWave 0.5s ease-in-out infinite;
+        }
+
+        .wave-bar:nth-child(1) { animation-delay: 0s; height: 20px; }
+        .wave-bar:nth-child(2) { animation-delay: 0.1s; height: 35px; }
+        .wave-bar:nth-child(3) { animation-delay: 0.2s; height: 45px; }
+        .wave-bar:nth-child(4) { animation-delay: 0.3s; height: 30px; }
+        .wave-bar:nth-child(5) { animation-delay: 0.4s; height: 35px; }
+
+        @keyframes soundWave {
+            0%, 100% { height: 20px; }
+            50% { height: 45px; }
+        }
+
+        .transcript-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .transcript-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .transcript-area {
+            width: 100%;
+            min-height: 150px;
+            padding: 1rem;
+            border: 2px solid var(--gray-200);
+            border-radius: 12px;
+            font-size: 0.9375rem;
+            font-family: inherit;
+            line-height: 1.6;
+            resize: vertical;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .transcript-area:focus {
+            border-color: var(--primary-blue);
+            background: var(--gray-50);
+        }
+
+        .transcript-area::placeholder {
+            color: var(--gray-400);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-blue-dark);
+        }
+
+        .btn-outline {
+            background: white;
+            color: var(--gray-700);
+            border: 2px solid var(--gray-200);
+        }
+
+        .btn-outline:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-300);
+        }
+
+        .btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .browser-note {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: var(--orange-100);
+            border-radius: 10px;
+            border-left: 4px solid var(--orange-500);
+            font-size: 0.8125rem;
+            color: var(--gray-600);
+        }
+
+        .success-message {
+            display: none;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            background: var(--green-100);
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+            color: var(--green-500);
+        }
+
+        .success-message.show {
+            display: flex;
+        }
+
+        @media (max-width: 640px) {
+            .voice-container {
+                border-radius: 0;
+            }
+
+            body {
+                padding: 0;
+            }
+
+            .back-button {
+                top: 0.75rem;
+                left: 0.75rem;
+            }
+
+            .voice-content {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="/counselling" class="back-button">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        Back to Counselling
+    </a>
+
+    <div class="voice-container">
+        <div class="voice-header">
+            <div class="voice-header-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                </svg>
+            </div>
+            <h1>Voice Counselling</h1>
+            <p>Speak in English or Tamil. This voice counselling system captures your speech and helps you express your thoughts and concerns.</p>
+        </div>
+
+        <div class="voice-content">
+            <!-- Language Selector -->
+            <div class="language-selector">
+                <label>Select Language:</label>
+                <select id="languageSelect" onchange="changeLanguage()">
+                    <option value="en-IN">English</option>
+                    <option value="ta-IN">Tamil (தமிழ்)</option>
+                </select>
+            </div>
+
+            <!-- Error Message -->
+            <div class="error-message" id="errorMessage">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span id="errorText"></span>
+            </div>
+
+            <!-- Success Message -->
+            <div class="success-message" id="successMessage">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <span id="successText"></span>
+            </div>
+
+            <!-- Microphone Section -->
+            <div class="mic-section">
+                <button class="mic-button" id="micButton" onclick="toggleRecording()">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                    </svg>
+                </button>
+
+                <div class="status-container">
+                    <div class="status-indicator" id="statusIndicator"></div>
+                    <div class="status-text" id="statusText">Click mic to start</div>
+                </div>
+
+                <div class="sound-waves" id="soundWaves">
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                    <div class="wave-bar"></div>
+                </div>
+            </div>
+
+            <!-- Transcript Section -->
+            <div class="transcript-section">
+                <label class="transcript-label">Your Voice Notes</label>
+                <textarea class="transcript-area" id="transcriptArea" placeholder="Your speech will appear here..."></textarea>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="btn btn-outline" onclick="clearTranscript()">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                    Clear
+                </button>
+                <button class="btn btn-primary" onclick="saveTranscript()">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
+                    </svg>
+                    Save Notes
+                </button>
+            </div>
+
+            <!-- Browser Note -->
+            <div class="browser-note">
+                <strong>Note:</strong> This feature works only in Google Chrome and requires microphone permission. 
+                Supports both <strong>English</strong> and <strong>Tamil</strong> languages. 
+                Please ensure your microphone is connected and allow permission when prompted.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Web Speech API
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let recognition = null;
+        let isRecording = false;
+
+        // Initialize Speech Recognition
+        function initSpeechRecognition() {
+            if (!SpeechRecognition) {
+                showError('Speech Recognition not supported in this browser. Please use Google Chrome.');
+                document.getElementById('micButton').disabled = true;
+                return false;
+            }
+
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = document.getElementById('languageSelect').value;
+
+            recognition.onstart = function() {
+                isRecording = true;
+                updateUIState('listening');
+            };
+
+            recognition.onend = function() {
+                isRecording = false;
+                updateUIState('idle');
+            };
+
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                const currentText = document.getElementById('transcriptArea').value;
+                document.getElementById('transcriptArea').value = currentText + (currentText ? ' ' : '') + transcript;
+                updateUIState('completed');
+            };
+
+            recognition.onerror = function(event) {
+                isRecording = false;
+                updateUIState('idle');
+
+                switch(event.error) {
+                    case 'no-speech':
+                        showError('No speech detected. Please try again and speak clearly.');
+                        break;
+                    case 'audio-capture':
+                        showError('No microphone found. Please check your microphone connection.');
+                        break;
+                    case 'not-allowed':
+                        showError('Microphone permission denied. Please allow microphone access.');
+                        break;
+                    case 'network':
+                        showError('Network error occurred. Please check your internet connection.');
+                        break;
+                    case 'aborted':
+                        break;
+                    default:
+                        showError('An error occurred: ' + event.error);
+                }
+            };
+
+            return true;
+        }
+
+        // Toggle Recording
+        function toggleRecording() {
+            if (!recognition) {
+                if (!initSpeechRecognition()) {
+                    return;
+                }
+            }
+
+            if (isRecording) {
+                recognition.stop();
+            } else {
+                hideError();
+                hideSuccess();
+                try {
+                    recognition.start();
+                } catch (error) {
+                    showError('Could not start recording. Please try again.');
+                }
+            }
+        }
+
+        // Update UI State
+        function updateUIState(state) {
+            const micButton = document.getElementById('micButton');
+            const statusIndicator = document.getElementById('statusIndicator');
+            const statusText = document.getElementById('statusText');
+            const soundWaves = document.getElementById('soundWaves');
+
+            switch(state) {
+                case 'listening':
+                    micButton.classList.add('recording');
+                    statusIndicator.classList.add('active');
+                    statusText.classList.add('listening');
+                    statusText.textContent = 'Listening...';
+                    soundWaves.classList.add('show');
+                    break;
+
+                case 'completed':
+                    micButton.classList.remove('recording');
+                    statusIndicator.classList.remove('active');
+                    statusText.classList.remove('listening');
+                    statusText.textContent = 'Click mic to start';
+                    soundWaves.classList.remove('show');
+                    break;
+
+                case 'idle':
+                default:
+                    micButton.classList.remove('recording');
+                    statusIndicator.classList.remove('active');
+                    statusText.classList.remove('listening');
+                    statusText.textContent = 'Click mic to start';
+                    soundWaves.classList.remove('show');
+                    break;
+            }
+        }
+
+        // Change Language
+        function changeLanguage() {
+            const selectedLang = document.getElementById('languageSelect').value;
+            
+            if (recognition) {
+                if (isRecording) {
+                    recognition.stop();
+                }
+                recognition.lang = selectedLang;
+            }
+            
+            hideError();
+            hideSuccess();
+            const langName = selectedLang === 'ta-IN' ? 'Tamil' : 'English';
+            showSuccess('Language changed to ' + langName + '. You can now speak in ' + langName + '.');
+            setTimeout(() => {
+                hideSuccess();
+            }, 2000);
+        }
+
+        // Clear Transcript
+        function clearTranscript() {
+            document.getElementById('transcriptArea').value = '';
+            hideError();
+            hideSuccess();
+        }
+
+        // Save Transcript
+        function saveTranscript() {
+            const transcript = document.getElementById('transcriptArea').value.trim();
+
+            if (!transcript) {
+                showError('No transcript to save. Please record something first.');
+                return;
+            }
+
+            fetch('/save-voice-note', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ notes: transcript })
+            })
+            .then(response => response.json())
+            .then(data => {
+                 if (data.success) {
+                     showSuccess(data.message);
+                } else {
+                     showError(data.message || 'Failed to save notes.');
+                 }
+            })
+            .catch(error => {
+                 showError('Something went wrong while saving notes.');
+            });
+        }
+
+        // Show Error
+        function showError(message) {
+            hideSuccess();
+            document.getElementById('errorText').textContent = message;
+            document.getElementById('errorMessage').classList.add('show');
+        }
+
+        // Hide Error
+        function hideError() {
+            document.getElementById('errorMessage').classList.remove('show');
+        }
+
+        // Show Success
+        function showSuccess(message) {
+            hideError();
+            document.getElementById('successText').textContent = message;
+            document.getElementById('successMessage').classList.add('show');
+        }
+
+        // Hide Success
+        function hideSuccess() {
+            document.getElementById('successMessage').classList.remove('show');
+        }
+    </script>
+</body>
+</html>
