@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Student - Student Dropout Prediction & Counselling System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-blue: #3b82f6;
+            --primary-blue-dark: #2563eb;
+            --sidebar-bg: #1e293b;
+            --sidebar-hover: #334155;
+            --sidebar-active: #2563eb;
+            --white: #ffffff;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --green-500: #10b981;
+            --red-500: #ef4444;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--gray-50);
+            color: var(--gray-800);
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: var(--sidebar-bg);
+            color: white;
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            padding: 1.5rem 1rem;
+        }
+
+        .logo {
+            font-size: 1.1rem;
+            font-weight: 700;
+            line-height: 1.4;
+            margin-bottom: 2rem;
+        }
+
+        .nav-title {
+            color: var(--gray-400);
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            margin: 1rem 0 0.7rem;
+            padding-left: 0.5rem;
+            letter-spacing: 0.05em;
+        }
+
+        .nav-item {
+            display: block;
+            color: var(--gray-300);
+            text-decoration: none;
+            padding: 0.9rem 1rem;
+            border-radius: 10px;
+            margin-bottom: 0.45rem;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: var(--sidebar-active);
+            color: white;
+        }
+
+        .logout-btn {
+            display: block;
+            margin-top: 2rem;
+            color: #f87171;
+            text-decoration: none;
+            padding: 0.9rem 1rem;
+            border-radius: 10px;
+            background: rgba(239, 68, 68, 0.08);
+            font-weight: 600;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            flex: 1;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: white;
+            border-bottom: 1px solid var(--gray-200);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+
+        .profile {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--gray-600);
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .form-card {
+            background: white;
+            border: 1px solid var(--gray-200);
+            border-radius: 18px;
+            padding: 2rem;
+            max-width: 900px;
+            box-shadow: 0 8px 24px rgba(15, 23, 42, 0.05);
+        }
+
+        .form-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 0.35rem;
+        }
+
+        .form-subtitle {
+            color: var(--gray-500);
+            font-size: 0.95rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1.2rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 0.88rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--gray-700);
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 0.9rem 1rem;
+            border: 1px solid var(--gray-300);
+            border-radius: 12px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: 0.2s ease;
+            background: white;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.8rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.9rem 1.4rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-blue), var(--primary-blue-dark));
+            color: white;
+            min-width: 170px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            opacity: 0.96;
+        }
+
+        .btn-secondary {
+            background: var(--gray-100);
+            color: var(--gray-700);
+            min-width: 140px;
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-200);
+        }
+
+        .tips-box {
+            margin-top: 1.5rem;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 14px;
+            padding: 1rem 1.2rem;
+        }
+
+        .tips-title {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--primary-blue-dark);
+            margin-bottom: 0.45rem;
+        }
+
+        .tips-text {
+            font-size: 0.9rem;
+            color: var(--gray-700);
+            line-height: 1.6;
+        }
+
+        @media (max-width: 900px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .header,
+            .content {
+                padding: 1rem;
+            }
+
+            .form-card {
+                padding: 1.2rem;
+            }
+
+            .page-title {
+                font-size: 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="logo">Student Dropout<br>System</div>
+
+            <div class="nav-title">Main Menu</div>
+            <a href="/admin-dashboard" class="nav-item">Dashboard</a>
+            <a href="/view-all-students" class="nav-item">View Students</a>
+            <a href="/high-risk-students" class="nav-item">High Risk Students</a>
+            <a href="/counselling" class="nav-item">Counselling Logs</a>
+
+            <div class="nav-title">Management</div>
+            <a href="/add-student" class="nav-item active">Add Student</a>
+            <a href="/manage-staff" class="nav-item">Manage Staff</a>
+            <a href="/reports-analytics" class="nav-item">Reports</a>
+
+            <a href="/logout" class="logout-btn">Logout</a>
+        </aside>
+
+        <div class="main-content">
+            <header class="header">
+                <h1 class="page-title">Add Student</h1>
+                <div class="profile">Admin Panel</div>
+            </header>
+
+            <main class="content">
+                <div class="form-card">
+                    <div class="form-header">
+                        <div class="form-title">Create New Student Profile</div>
+                        <div class="form-subtitle">Fill the student details below to add them into the system.</div>
+                    </div>
+
+                    <form action="/students/add" method="POST">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="register_number">Register Number</label>
+                                <input type="text" id="register_number" name="register_number" placeholder="Enter register number" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="name">Student Name</label>
+                                <input type="text" id="name" name="name" placeholder="Enter full name" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email">Email Address</label>
+                                <input type="email" id="email" name="email" placeholder="Enter email">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="phone">Phone Number</label>
+                                <input type="text" id="phone" name="phone" placeholder="Enter phone number">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="department">Department</label>
+                                <input type="text" id="department" name="department" placeholder="Enter department" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="year">Year</label>
+                                <input type="number" id="year" name="year" placeholder="Enter year" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="attendance">Attendance (%)</label>
+                                <input type="number" step="0.1" id="attendance" name="attendance" placeholder="Enter attendance %" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="average_marks">Average Marks (%)</label>
+                                <input type="number" step="0.1" id="average_marks" name="average_marks" placeholder="Enter marks %" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Risk Level</label>
+                                <input type="text" value="Auto calculated by system" readonly>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="password">Password</label>
+                                <input type="text" id="password" name="password" value="student123" required>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Add Student</button>
+                            <a href="/view-all-students" class="btn btn-secondary">View Students</a>
+                        </div>
+                    </form>
+
+                    <div class="tips-box">
+                        <div class="tips-title">Quick Note</div>
+                        <div class="tips-text">
+                            Default password is set to <b>student123</b>. After adding a student, check the students list page to confirm the record is saved successfully.
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+</body>
+</html>
