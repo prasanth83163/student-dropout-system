@@ -313,7 +313,6 @@
 
         .stat-card,
         .content-card,
-        .chart-card,
         .activity-card {
             background: white;
             border: 1px solid var(--gray-200);
@@ -380,7 +379,6 @@
         }
 
         .section-title,
-        .chart-title,
         .activity-title {
             font-size: 1.125rem;
             font-weight: 600;
@@ -394,193 +392,18 @@
             margin-bottom: 1.25rem;
         }
 
-        .charts-grid {
+        .summary-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
 
-        .chart-header,
         .activity-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1.5rem;
-        }
-
-        .chart-legend {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 0.375rem;
-            font-size: 0.75rem;
-            color: var(--gray-500);
-        }
-
-        .legend-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-        }
-
-        .legend-dot.red { background: var(--red-500); }
-        .legend-dot.yellow { background: var(--yellow-500); }
-        .legend-dot.green { background: var(--green-500); }
-
-        .grouped-bar-chart {
-            display: flex;
-            height: 280px;
-            padding: 1rem 0;
-        }
-
-        .y-axis {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: flex-end;
-            padding-right: 0.75rem;
-            color: var(--gray-400);
-            font-size: 0.75rem;
-            font-weight: 500;
-            min-width: 30px;
-        }
-
-        .chart-area {
-            flex: 1;
-            position: relative;
-            display: flex;
-            align-items: flex-end;
-        }
-
-        .grid-lines {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            pointer-events: none;
-        }
-
-        .grid-line {
-            width: 100%;
-            height: 1px;
-            background: var(--gray-100);
-        }
-
-        .department-groups {
-            display: flex;
-            justify-content: space-around;
-            align-items: flex-end;
-            width: 100%;
-            height: 100%;
-            padding: 0 0.5rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .dept-group {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            flex: 1;
-            height: 100%;
-            justify-content: flex-end;
-        }
-
-        .bars-container {
-            display: flex;
-            align-items: flex-end;
-            gap: 0.25rem;
-            height: calc(100% - 2rem);
-            padding-bottom: 0.5rem;
-        }
-
-        .risk-bar {
-            width: 24px;
-            border-radius: 4px 4px 0 0;
-            position: relative;
-        }
-
-        .risk-bar.high {
-            background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
-        }
-
-        .risk-bar.medium {
-            background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
-        }
-
-        .risk-bar.low {
-            background: linear-gradient(180deg, #10b981 0%, #059669 100%);
-        }
-
-        .bar-value {
-            position: absolute;
-            top: -18px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 0.65rem;
-            font-weight: 600;
-            color: var(--gray-600);
-        }
-
-        .dept-label {
-            font-size: 0.75rem;
-            color: var(--gray-600);
-            font-weight: 500;
-            text-align: center;
-            white-space: nowrap;
-        }
-
-        .pie-chart-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 220px;
-        }
-
-        .pie-chart {
-            width: 170px;
-            height: 170px;
-            border-radius: 50%;
-            position: relative;
-        }
-
-        .pie-chart::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100px;
-            height: 100px;
-            background: white;
-            border-radius: 50%;
-        }
-
-        .pie-center {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            z-index: 1;
-        }
-
-        .pie-value {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--gray-800);
-        }
-
-        .pie-label {
-            font-size: 0.75rem;
-            color: var(--gray-500);
         }
 
         .view-all-btn {
@@ -728,7 +551,7 @@
                 display: flex;
             }
 
-            .charts-grid {
+            .summary-grid {
                 grid-template-columns: 1fr;
             }
         }
@@ -924,87 +747,62 @@
                         </div>
                     </div>
 
-                    <div class="charts-grid">
-                        <div class="chart-card">
-                            <div class="chart-header">
-                                <h3 class="chart-title">Risk Distribution by Department</h3>
-                                <div class="chart-legend">
-                                    <div class="legend-item"><div class="legend-dot red"></div><span>High Risk</span></div>
-                                    <div class="legend-item"><div class="legend-dot yellow"></div><span>Medium Risk</span></div>
-                                    <div class="legend-item"><div class="legend-dot green"></div><span>Low Risk</span></div>
-                                </div>
-                            </div>
+                    <div class="summary-grid">
+                        <div class="content-card">
+                            <h2 class="section-title">Department Risk Summary</h2>
+                            <p class="section-subtext">Department-wise student risk counts summary.</p>
 
                             {% if department_distribution %}
-                            {% set max_value = 1 %}
-                            {% for dept in department_distribution %}
-                                {% if dept.high_count > max_value %}{% set max_value = dept.high_count %}{% endif %}
-                                {% if dept.medium_count > max_value %}{% set max_value = dept.medium_count %}{% endif %}
-                                {% if dept.low_count > max_value %}{% set max_value = dept.low_count %}{% endif %}
-                            {% endfor %}
-
-                            <div class="grouped-bar-chart">
-                                <div class="y-axis">
-                                    <span>{{ max_value }}</span>
-                                    <span>{{ (max_value * 0.75)|round|int }}</span>
-                                    <span>{{ (max_value * 0.5)|round|int }}</span>
-                                    <span>{{ (max_value * 0.25)|round|int }}</span>
-                                    <span>0</span>
-                                </div>
-
-                                <div class="chart-area">
-                                    <div class="grid-lines">
-                                        <div class="grid-line"></div>
-                                        <div class="grid-line"></div>
-                                        <div class="grid-line"></div>
-                                        <div class="grid-line"></div>
-                                    </div>
-
-                                    <div class="department-groups">
+                            <div class="student-table-wrap">
+                                <table class="student-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Department</th>
+                                            <th>High Risk</th>
+                                            <th>Medium Risk</th>
+                                            <th>Low Risk</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
                                         {% for dept in department_distribution %}
-                                        <div class="dept-group">
-                                            <div class="bars-container">
-                                                <div class="risk-bar high" style="height: {{ (dept.high_count * 20) if dept.high_count else 0 }}%;">
-                                                    <span class="bar-value">{{ dept.high_count }}</span>
-                                                </div>
-                                                <div class="risk-bar medium" style="height: {{ (dept.medium_count / max_value * 100) if max_value > 0 else 0 }}%;">
-                                                    <span class="bar-value">{{ dept.medium_count }}</span>
-                                                </div>
-                                                <div class="risk-bar low" style="height: {{ (dept.low_count / max_value * 100) if max_value > 0 else 0 }}%;">
-                                                    <span class="bar-value">{{ dept.low_count }}</span>
-                                                </div>
-                                            </div>
-                                            <span class="dept-label">{{ dept.department }}</span>
-                                        </div>
+                                        <tr>
+                                            <td>{{ dept.department }}</td>
+                                            <td>{{ dept.high_count }}</td>
+                                            <td>{{ dept.medium_count }}</td>
+                                            <td>{{ dept.low_count }}</td>
+                                        </tr>
                                         {% endfor %}
-                                    </div>
-                                </div>
+                                    </tbody>
+                                </table>
                             </div>
                             {% else %}
                             <div class="content-card" style="margin:0; padding:1rem;">No department data available.</div>
                             {% endif %}
                         </div>
 
-                        <div class="chart-card">
-                            <div class="chart-header">
-                                <h3 class="chart-title">Overall Risk Distribution</h3>
-                                <div class="chart-legend">
-                                    <div class="legend-item"><div class="legend-dot red"></div><span>High</span></div>
-                                    <div class="legend-item"><div class="legend-dot yellow"></div><span>Medium</span></div>
-                                    <div class="legend-item"><div class="legend-dot green"></div><span>Low</span></div>
+                        <div class="content-card">
+                            <h2 class="section-title">Overall Risk Summary</h2>
+                            <p class="section-subtext">Overall student risk distribution in the system.</p>
+
+                            <div class="stats-grid" style="margin-bottom:0;">
+                                <div class="stat-card">
+                                    <div class="stat-value">{{ high_risk }}</div>
+                                    <div class="stat-label">High Risk Students</div>
                                 </div>
-                            </div>
 
-                            {% set total_count = total_students if total_students > 0 else 1 %}
-                            {% set high_deg = (high_risk / total_count) * 360 %}
-                            {% set medium_deg = (medium_risk / total_count) * 360 %}
+                                <div class="stat-card">
+                                    <div class="stat-value">{{ medium_risk }}</div>
+                                    <div class="stat-label">Medium Risk Students</div>
+                                </div>
 
-                            <div class="pie-chart-container">
-                                <div class="pie-chart" style="background: conic-gradient(var(--red-500) 0deg {{ high_deg }}deg, var(--yellow-500) {{ high_deg }}deg {{ high_deg + medium_deg }}deg, var(--green-500) {{ high_deg + medium_deg }}deg 360deg);">
-                                    <div class="pie-center">
-                                        <div class="pie-value">{{ total_students }}</div>
-                                        <div class="pie-label">Total</div>
-                                    </div>
+                                <div class="stat-card">
+                                    <div class="stat-value">{{ low_risk }}</div>
+                                    <div class="stat-label">Low Risk Students</div>
+                                </div>
+
+                                <div class="stat-card">
+                                    <div class="stat-value">{{ total_students }}</div>
+                                    <div class="stat-label">Total Students</div>
                                 </div>
                             </div>
                         </div>
